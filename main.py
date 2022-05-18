@@ -28,6 +28,7 @@ plt.plot(x,y)
 plt.show()
 
 # ############################# remove the outliers####################################
+# add some comments
 
 y_ascending = np.sort(y)
 upperFence = 2000
