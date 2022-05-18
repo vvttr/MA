@@ -11,7 +11,7 @@ df.drop(columns=[0,1],inplace=True)
 df.reset_index(drop=True,inplace=True)
 
 # show infos
-# print(df.head())
+print(df.head())
 # print(df.info())
 # print(df)
 
@@ -28,7 +28,7 @@ plt.plot(x,y)
 plt.show()
 
 # ############################# remove the outliers####################################
-# add some comments
+# RANSAC to remove outliers
 
 y_ascending = np.sort(y)
 upperFence = 2000
