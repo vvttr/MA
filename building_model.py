@@ -52,18 +52,31 @@ df = pd.read_csv('timeSeries.csv', header=None, delimiter=',', on_bad_lines='err
 if df.isnull().values.any():
     df.dropna(axis=0, inplace=True)
 df.drop(index=[0], inplace=True)
-print(df.shape)
+print('The original data has the shape of', df.shape)
+df_input = df.drop(columns=[4])
+print('The input data has the shape of', df_input.shape)
+df_output = df.drop(columns=[0, 1, 2, 3])
+print('The output data has the shape of', df_output.shape)
 print('-------------------------------------------------\n'
       'the first columns of input data are:\n',
-      df.head(),
+      df_input.head(),
       '\n-------------------------------------------------')
-df_normalized = preprocessing.normalize(df)
-train, test = model_selection.train_test_split(df_normalized, test_size=0.5)
-timesteps, features = df_normalized.shape  # how many TIMESTAMPS and FEATURES in the input data
-print('There are', timesteps, 'timestamps in the input data.')
+
+# ---------------------build the model----------------------------
+df_in_norm = preprocessing.normalize(df_input)
+df_out_norm = preprocessing.normalize(df_output)
+print(df_in_norm.shape)
+train, test = model_selection.train_test_split(df_in_norm, test_size=0.5)
+train_y, test_y = model_selection.train_test_split(df_out_norm, test_size=0.5)
+timeStamps, features = df_in_norm.shape  # how many TIMESTAMPS and FEATURES in the input data
+print('There are', timeStamps, 'timestamps in the input data.')
 print('There are', features, 'features in the input data.')
 model = ke.Sequential()
-model.add(layers.LSTM(50, activation='relu'))
+model.add(layers.LSTM(50, activation='relu', input_shape=(1, features)))
+model.add(layers.Dense(1))
+model.compile(optimizer = 'adam', loss = 'mse')
+print(model.summary())
+model.fit(df_in_norm,df_out_norm,epochs=200,verbose=0)
 # vth_norm = vth / st.mean(vth)
 # igp_norm = igp / st.mean(igp)
 # vds_norm = vds / st.mean(vds)
