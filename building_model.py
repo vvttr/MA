@@ -6,6 +6,7 @@ from sklearn import preprocessing, model_selection
 import tensorflow as tf
 from tensorflow import keras as ke
 from keras import layers
+
 # # -------------------------process the data(dimension)-----------------
 # # Cast the all the data to float64 and
 # # delete the unrelated data(column 0, 82 and 83)
@@ -47,19 +48,22 @@ from keras import layers
 # np.savetxt("timeSeries.csv", matrix, delimiter=",", header="vth,igp,igss,dc,vds", comments='')
 
 # --------------------------------------process the input-------------------------
-df = pd.read_csv('timeSeries.csv', header=None, delimiter=',', error_bad_lines=False)
+df = pd.read_csv('timeSeries.csv', header=None, delimiter=',', on_bad_lines='error')
 if df.isnull().values.any():
     df.dropna(axis=0, inplace=True)
-df.drop(index=[0],inplace=True)
+df.drop(index=[0], inplace=True)
 print(df.shape)
 print('-------------------------------------------------\n'
       'the first columns of input data are:\n',
       df.head(),
       '\n-------------------------------------------------')
 df_normalized = preprocessing.normalize(df)
-train, test = model_selection.train_test_split(df_normalized,test_size= 0.5)
+train, test = model_selection.train_test_split(df_normalized, test_size=0.5)
+timesteps, features = df_normalized.shape  # how many TIMESTAMPS and FEATURES in the input data
+print('There are', timesteps, 'timestamps in the input data.')
+print('There are', features, 'features in the input data.')
 model = ke.Sequential()
-model.add(layers.LSTM(50,activation='relu'))
+model.add(layers.LSTM(50, activation='relu'))
 # vth_norm = vth / st.mean(vth)
 # igp_norm = igp / st.mean(igp)
 # vds_norm = vds / st.mean(vds)
