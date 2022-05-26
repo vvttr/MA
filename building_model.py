@@ -63,20 +63,23 @@ print('-------------------------------------------------\n'
       '\n-------------------------------------------------')
 
 # ---------------------build the model----------------------------
+# data normalization
 df_in_norm = preprocessing.normalize(df_input)
 df_out_norm = preprocessing.normalize(df_output)
-print(df_in_norm.shape)
+# data split
 train, test = model_selection.train_test_split(df_in_norm, test_size=0.5)
 train_y, test_y = model_selection.train_test_split(df_out_norm, test_size=0.5)
-timeStamps, features = df_in_norm.shape  # how many TIMESTAMPS and FEATURES in the input data
-print('There are', timeStamps, 'timestamps in the input data.')
+samples, features = df_in_norm.shape  # how many SAMPLES and FEATURES in the input data
+print('There are', samples, 'samples in the input data.')
 print('There are', features, 'features in the input data.')
 model = ke.Sequential()
 model.add(layers.LSTM(50, activation='relu', input_shape=(1, features)))
 model.add(layers.Dense(1))
 model.compile(optimizer = 'adam', loss = 'mse')
 print(model.summary())
-model.fit(df_in_norm,df_out_norm,epochs=200,verbose=0)
+train = train.reshape(train.shape[0],1,train.shape[1])
+print(train.shape)
+model.fit(train,train_y,epochs=200,verbose=0)
 # vth_norm = vth / st.mean(vth)
 # igp_norm = igp / st.mean(igp)
 # vds_norm = vds / st.mean(vds)
